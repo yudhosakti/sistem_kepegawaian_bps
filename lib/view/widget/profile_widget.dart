@@ -1,13 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simpeg/models/admin_model.dart';
 import 'package:simpeg/provider/auth_provider.dart';
 import 'package:simpeg/view/pages/edit_profile_page.dart';
 import 'package:simpeg/view/pages/login_page.dart';
 
-class ProfileWidget extends StatelessWidget {
+class ProfileWidget extends StatefulWidget {
   const ProfileWidget({super.key});
+
+  @override
+  State<ProfileWidget> createState() => _ProfileWidgetState();
+}
+
+class _ProfileWidgetState extends State<ProfileWidget> {
+  late SharedPreferences preferences;
+
+  @override
+  void initState()  {
+    initialSharedPref();
+    super.initState();
+  }
+
+  Future<void> initialSharedPref() async {
+    preferences = await SharedPreferences.getInstance();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +157,8 @@ class ProfileWidget extends StatelessWidget {
                                               context
                                                   .read<AuthProvider>()
                                                   .resetUser();
-
+                                              preferences.setString(
+                                                  'token', '');
                                               Navigator.pushReplacement(
                                                   context,
                                                   MaterialPageRoute(

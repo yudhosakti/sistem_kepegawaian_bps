@@ -476,6 +476,7 @@ class CustomViewDetailPegawaiWidget extends StatelessWidget {
                                                     .width *
                                                 0.01))),
                                 onPressed: () {
+                                  provider.resetBehavior();
                                   ScaffoldMessenger.of(context)
                                       .clearSnackBars();
                                   ScaffoldMessenger.of(context)
@@ -543,6 +544,8 @@ class CustomViewDetailPegawaiWidget extends StatelessWidget {
                                                             ScaffoldMessenger
                                                                     .of(context)
                                                                 .clearSnackBars();
+                                                            provider
+                                                                .resetBehavior();
                                                           },
                                                           child: Text(
                                                             "Cancel",

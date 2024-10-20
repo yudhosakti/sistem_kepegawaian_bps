@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simpeg/provider/auth_provider.dart';
 import 'package:simpeg/view/pages/main_page.dart';
 import 'package:simpeg/view/pages/onboarding_page.dart';
@@ -9,8 +11,25 @@ import 'package:simpeg/view/widget/logo_top_widget.dart';
 import 'package:simpeg/view/widget/text_email_form_widget.dart';
 import 'package:simpeg/view/widget/top_title_widget.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  late SharedPreferences preferences;
+
+  @override
+  void initState() {
+    initialSharePref();
+    super.initState();
+  }
+
+  Future<void> initialSharePref() async {
+    preferences = await SharedPreferences.getInstance();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,30 +112,40 @@ class LoginPage extends StatelessWidget {
                         backgroundColor: WidgetStatePropertyAll(
                             Color.fromARGB(255, 60, 129, 249))),
                     onPressed: () async {
-                      if (await provider.loginUser()) {
-                        Navigator.pushReplacement(context, MaterialPageRoute(
-                          builder: (context) {
-                            return MainPage();
-                          },
-                        ));
+                      if (provider.isLoading) {
+                        Fluttertoast.showToast(msg: "Loading");
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            backgroundColor: Colors.black,
-                            content: Text(
-                              provider.errorMessage,
-                              style: GoogleFonts.nunito(
-                                color: Colors.white,
-                              ),
-                            )));
+                        if (await provider.loginUser()) {
+                          preferences.setString(
+                              'token', provider.adminModel!.token);
+                          Navigator.pushReplacement(context, MaterialPageRoute(
+                            builder: (context) {
+                              return MainPage();
+                            },
+                          ));
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: Colors.black,
+                              content: Text(
+                                provider.errorMessage,
+                                style: GoogleFonts.nunito(
+                                  color: Colors.white,
+                                ),
+                              )));
+                        }
                       }
                     },
-                    child: Text(
-                      "Login",
-                      style: GoogleFonts.nunito(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700),
-                    ));
+                    child: provider.isLoading
+                        ? CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : Text(
+                            "Login",
+                            style: GoogleFonts.nunito(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700),
+                          ));
               }),
             ),
           ),

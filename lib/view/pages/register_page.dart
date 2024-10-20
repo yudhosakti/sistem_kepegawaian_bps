@@ -83,7 +83,7 @@ class RegisterPage extends StatelessWidget {
             );
           }),
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.01,
+            height: MediaQuery.of(context).size.height * 0.04,
           ),
           Container(
             width: MediaQuery.of(context).size.width,
@@ -111,15 +111,46 @@ class RegisterPage extends StatelessWidget {
                             content: Text(provider.errorMessage)));
                       }
                     },
-                    child: Text(
-                      "Register",
-                      style: GoogleFonts.nunito(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 20),
-                    ));
+                    child: provider.isLoading
+                        ? CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : Text(
+                            "Register",
+                            style: GoogleFonts.nunito(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 20),
+                          ));
               }),
             ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Already Have Account ?",
+                style: GoogleFonts.nunito(
+                    fontSize: 18,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600),
+              ),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(context, MaterialPageRoute(
+                      builder: (context) {
+                        return LoginPage();
+                      },
+                    ));
+                  },
+                  child: Text(
+                    "Login Now",
+                    style: GoogleFonts.nunito(
+                        fontSize: 18,
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.w700),
+                  ))
+            ],
           )
         ],
       ),

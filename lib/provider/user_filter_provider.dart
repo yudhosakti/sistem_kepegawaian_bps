@@ -66,10 +66,10 @@ class UserFilterProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteUser(int index) async {
+  Future<void> deleteUser(int index, int idAdmin) async {
     if (await AdminData().updateStatusAdmin(adminFilter[index].idAdmin)) {
       adminModels = await AdminData().getAllUser();
-      adminFilter = adminModels;
+      initialData(adminModels, idAdmin);
       notifyListeners();
     } else {
       adminFilter = adminModels;

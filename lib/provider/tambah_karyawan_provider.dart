@@ -61,14 +61,14 @@ class TambahKaryawanProvider extends ChangeNotifier {
   TextEditingController OldNipPegawai = TextEditingController();
 
   TextEditingController NewNipPegawai = TextEditingController();
-  TextEditingController pangkatPegawai = TextEditingController();
+  TextEditingController pangkatPegawai = TextEditingController(text: "Penata Muda");
 
   TextEditingController TempatLahirPegawai = TextEditingController();
   String? tanggalLahir;
   String jenisKelamin = "Laki-Laki";
   String pickedGender = '';
   String golongan = "3A";
-  String pickedPangkat = '';
+  String pickedPangkat = "Penata Muda";
   String pendidikanTerakhir = "S1";
   TextEditingController JabatanPegawai = TextEditingController();
   TextEditingController PengalamanPejabatPegawai = TextEditingController();

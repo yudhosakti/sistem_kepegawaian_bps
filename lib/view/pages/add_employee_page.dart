@@ -119,10 +119,10 @@ class AddEmployeePage extends StatelessWidget {
                     horizontal: MediaQuery.of(context).size.width * 0.01),
                 child: Container(
                   margin: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * 0.005,
-                      bottom: MediaQuery.of(context).size.height * 0.005),
+                    top: MediaQuery.of(context).size.height * 0.005,
+                  ),
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.1,
+                  height: MediaQuery.of(context).size.height * 0.12,
                   child: Column(
                     children: [
                       Container(
@@ -145,6 +145,7 @@ class AddEmployeePage extends StatelessWidget {
                           padding: EdgeInsets.only(
                               right: MediaQuery.of(context).size.width * 0.3),
                           child: DateTimeFormField(
+                            padding: EdgeInsets.zero,
                             initialValue: provider.tanggalLahir == null
                                 ? null
                                 : DateFormat('yyyy-MM-DD')
@@ -281,134 +282,144 @@ class AddEmployeePage extends StatelessWidget {
                   ],
                 ),
               ),
-             context.read<AuthProvider>().adminModel!.role == 'Admin' ? Container(
-                width: MediaQuery.of(context).size.width,
-                constraints: BoxConstraints(
-                    maxHeight: double.infinity,
-                    minHeight: MediaQuery.of(context).size.height * 0.1),
-                child: Column(
-                  children: [
-                    Container(
+              context.read<AuthProvider>().adminModel!.role == 'Admin'
+                  ? Container(
                       width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * 0.04,
-                      child: Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal:
-                                  MediaQuery.of(context).size.width * 0.01),
-                          child: Text(
-                            "Kelebihan Pegawai",
-                            style: GoogleFonts.nunito(
-                                fontSize: 19,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ),
-                    ),
-                    ListView.builder(
-                      itemCount: provider.dataKelebihan.length + 1,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        if (index == provider.dataKelebihan.length) {
-                          return Container(
+                      constraints: BoxConstraints(
+                          maxHeight: double.infinity,
+                          minHeight: MediaQuery.of(context).size.height * 0.1),
+                      child: Column(
+                        children: [
+                          Container(
                             width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height * 0.06,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                IconButton(
-                                    onPressed: () {
-                                      provider.tambahKelebihan();
-                                    },
-                                    icon: Icon(
-                                      Icons.add,
+                            height: MediaQuery.of(context).size.height * 0.04,
+                            child: Align(
+                              alignment: Alignment.bottomLeft,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal:
+                                        MediaQuery.of(context).size.width *
+                                            0.01),
+                                child: Text(
+                                  "Kelebihan Pegawai",
+                                  style: GoogleFonts.nunito(
+                                      fontSize: 19,
                                       color: Colors.black,
-                                    ))
-                              ],
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ),
                             ),
-                          );
-                        } else {
-                          return CustomItemComponentWidget(
-                            controller: provider.dataKelebihan[index].data,
-                            code: 2,
-                            index: index,
-                            provider: provider,
-                            hintTitle: "Masukkan Kelebihan Pegawai",
-                            title: "Kelebihan ${index + 1}",
-                          );
-                        }
-                      },
+                          ),
+                          ListView.builder(
+                            itemCount: provider.dataKelebihan.length + 1,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              if (index == provider.dataKelebihan.length) {
+                                return Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.06,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            provider.tambahKelebihan();
+                                          },
+                                          icon: Icon(
+                                            Icons.add,
+                                            color: Colors.black,
+                                          ))
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                return CustomItemComponentWidget(
+                                  controller:
+                                      provider.dataKelebihan[index].data,
+                                  code: 2,
+                                  index: index,
+                                  provider: provider,
+                                  hintTitle: "Masukkan Kelebihan Pegawai",
+                                  title: "Kelebihan ${index + 1}",
+                                );
+                              }
+                            },
+                          )
+                        ],
+                      ),
                     )
-                  ],
-                ),
-              ) : Container(),
-             context.read<AuthProvider>().adminModel!.role == 'Admin' ? Container(
-                width: MediaQuery.of(context).size.width,
-                constraints: BoxConstraints(
-                    maxHeight: double.infinity,
-                    minHeight: MediaQuery.of(context).size.height * 0.1),
-                child: Column(
-                  children: [
-                    Container(
+                  : Container(),
+              context.read<AuthProvider>().adminModel!.role == 'Admin'
+                  ? Container(
                       width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * 0.04,
-                      child: Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal:
-                                  MediaQuery.of(context).size.width * 0.01),
-                          child: Text(
-                            "Kekurangan Pegawai",
-                            style: GoogleFonts.nunito(
-                                fontSize: 19,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ),
-                    ),
-                    ListView.builder(
-                      itemCount: provider.dataKekurangan.length + 1,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        if (index == provider.dataKekurangan.length) {
-                          return Container(
+                      constraints: BoxConstraints(
+                          maxHeight: double.infinity,
+                          minHeight: MediaQuery.of(context).size.height * 0.1),
+                      child: Column(
+                        children: [
+                          Container(
                             width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height * 0.06,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                IconButton(
-                                    onPressed: () {
-                                      provider.tambahKekurangant();
-                                    },
-                                    icon: Icon(
-                                      Icons.add,
+                            height: MediaQuery.of(context).size.height * 0.04,
+                            child: Align(
+                              alignment: Alignment.bottomLeft,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal:
+                                        MediaQuery.of(context).size.width *
+                                            0.01),
+                                child: Text(
+                                  "Kekurangan Pegawai",
+                                  style: GoogleFonts.nunito(
+                                      fontSize: 19,
                                       color: Colors.black,
-                                    ))
-                              ],
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ),
                             ),
-                          );
-                        } else {
-                          return CustomItemComponentWidget(
-                            controller: provider.dataKekurangan[index].data,
-                            code: 3,
-                            index: index,
-                            provider: provider,
-                            hintTitle: "Masukkan Kekurangan Pegawai",
-                            title: "Kekurangan ${index + 1}",
-                          );
-                        }
-                      },
+                          ),
+                          ListView.builder(
+                            itemCount: provider.dataKekurangan.length + 1,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              if (index == provider.dataKekurangan.length) {
+                                return Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.06,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            provider.tambahKekurangant();
+                                          },
+                                          icon: Icon(
+                                            Icons.add,
+                                            color: Colors.black,
+                                          ))
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                return CustomItemComponentWidget(
+                                  controller:
+                                      provider.dataKekurangan[index].data,
+                                  code: 3,
+                                  index: index,
+                                  provider: provider,
+                                  hintTitle: "Masukkan Kekurangan Pegawai",
+                                  title: "Kekurangan ${index + 1}",
+                                );
+                              }
+                            },
+                          )
+                        ],
+                      ),
                     )
-                  ],
-                ),
-              ) : Container(),
+                  : Container(),
               Container(
                 width: MediaQuery.of(context).size.width,
                 constraints: BoxConstraints(

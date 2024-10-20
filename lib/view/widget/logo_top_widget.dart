@@ -15,20 +15,20 @@ class LogoTopWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: MediaQuery.of(context).size.width * 0.25,
+            width: MediaQuery.of(context).size.width * 0.3,
             height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle, color: Colors.grey.withOpacity(0.5)),
+            decoration:
+                BoxDecoration(shape: BoxShape.circle, color: Colors.white),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.1,
+                  height: MediaQuery.of(context).size.height * 0.2,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                          image: AssetImage('assets/logo.png'),
+                          image: AssetImage('assets/appicon.png'),
                           fit: BoxFit.fill)),
                 ),
               ],

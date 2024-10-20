@@ -19,6 +19,8 @@ class AuthProvider extends ChangeNotifier {
   AdminModel? adminModel;
   String errorMessage = '';
 
+  bool isLoading = false;
+
   bool validateLogin() {
     errorMessage = '';
     if (etEmailLogin.text.isEmpty || etPasswordLogin.text.isEmpty) {
@@ -57,6 +59,8 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> loginUser() async {
+    isLoading = true;
+    notifyListeners();
     if (validateLogin()) {
       await AdminData().loginUser(etEmailLogin.text, etPasswordLogin.text).then(
         (value) {
@@ -66,12 +70,18 @@ class AuthProvider extends ChangeNotifier {
         },
       );
       if (adminModel != null) {
+        isLoading = false;
+    notifyListeners();
         return true;
       } else {
         errorMessage = "Invalid Email Or Password";
+        isLoading = false;
+    notifyListeners();
         return false;
       }
     } else {
+      isLoading = false;
+    notifyListeners();
       return false;
     }
   }
@@ -82,20 +92,38 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> registerUser() async {
+    isLoading = true;
+    notifyListeners();
     if (validateRegister()) {
       if (await AdminData().registerUser(etEmailRegister.text,
           etUsernameRegister.text, etPasswordRegister.text)) {
+        isLoading = false;
+    notifyListeners();
         return true;
       } else {
         errorMessage = 'Internal Error';
+        isLoading = false;
+    notifyListeners();
         return false;
       }
     } else {
+      isLoading = false;
+    notifyListeners();
       return false;
     }
   }
 
   void resetUser() {
     adminModel = null;
+  }
+
+  Future<void> getSingleUser(int idAdmin) async {
+    AdminModel? adminTest = await AdminData().getSingleAdmin(idAdmin);
+
+    if (adminTest != null) {
+      adminModel = adminTest;
+    } else {
+      print("Failed");
+    }
   }
 }

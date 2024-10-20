@@ -6,6 +6,7 @@ class AdminModel {
   final String password;
   final String avatar;
   final String lastLogin;
+  String token = '';
 
   AdminModel(
       {required this.avatar,

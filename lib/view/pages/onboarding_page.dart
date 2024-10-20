@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:simpeg/view/pages/login_page.dart';
+import 'package:simpeg/view/pages/register_page.dart';
 
 class OnBoardingPage extends StatelessWidget {
   const OnBoardingPage({super.key});
@@ -16,11 +17,12 @@ class OnBoardingPage extends StatelessWidget {
         children: [
           Container(
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.4,
+            height: MediaQuery.of(context).size.height * 0.35,
             decoration: BoxDecoration(
-                color: Colors.grey,
+                color: Colors.white,
                 image: DecorationImage(
-                    image: AssetImage('assets/cover.jpg'), fit: BoxFit.cover)),
+                    image: AssetImage('assets/appicon.png'),
+                    fit: BoxFit.cover)),
           ),
           Expanded(
             child: Container(
@@ -33,49 +35,39 @@ class OnBoardingPage extends StatelessWidget {
                     child: Container(
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height * 0.1,
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.17,
-                            height: MediaQuery.of(context).size.height,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                    image: AssetImage('assets/logo.png'),
-                                    fit: BoxFit.contain)),
+                          Text(
+                            "Sistem Informasi",
+                            style: GoogleFonts.comicNeue(
+                                color: Colors.black,
+                                fontSize: 26,
+                                fontWeight: FontWeight.w600),
                           ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.01,
+                          Text(
+                            "Kepegawaian Lokal (SimLo)",
+                            style: GoogleFonts.comicNeue(
+                                color: Colors.black,
+                                fontSize: 26,
+                                fontWeight: FontWeight.w600),
                           ),
-                          Expanded(
-                              child: Container(
-                            child: Text(
-                              "Sistem Informasi Pegawai Lokal (SimLo) BPS Pacitan",
-                              style: GoogleFonts.poppins(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ))
                         ],
                       ),
                     ),
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.12,
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal:
-                                MediaQuery.of(context).size.width * 0.03),
-                        child: Text(
-                          "Memanajemen Sistem Kepegawaian Lokal di BPS Pacitan",
-                          style: GoogleFonts.poppins(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 22),
-                        ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: MediaQuery.of(context).size.width * 0.01),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.12,
+                      child: Text(
+                        "Digunakan sebagai pegangan kepala satker untuk membantu proses manajemen SDM aparatur sipil negara di BPS Kabupaten Pacitan.",
+                        style: GoogleFonts.comicNeue(
+                            color: Colors.black,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -130,7 +122,13 @@ class OnBoardingPage extends StatelessWidget {
                                     elevation: WidgetStatePropertyAll(5),
                                     backgroundColor:
                                         WidgetStatePropertyAll(Colors.white)),
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => RegisterPage(),
+                                      ));
+                                },
                                 child: Text(
                                   "Register",
                                   style: GoogleFonts.nunito(

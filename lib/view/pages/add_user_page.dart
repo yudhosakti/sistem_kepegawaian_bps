@@ -1,5 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:simpeg/provider/add_user_provider.dart';
@@ -281,10 +282,10 @@ class AddUserPage extends StatelessWidget {
                                   print("Loading");
                                 } else {
                                   if (await provider.addUser()) {
-                                    print("Success");
+                                    Fluttertoast.showToast(msg: "Success");
                                     Navigator.pop(context);
                                   } else {
-                                    print("Failed");
+                                    Fluttertoast.showToast(msg: "Failed");
                                     Navigator.pop(context);
                                   }
                                 }

@@ -20,6 +20,8 @@ class AdminData {
         var jsonData = jsonDecode(response.body);
         dynamic jsonMap = (jsonData as Map<String, dynamic>)['data'];
         data = AdminModel.getDataFromJSON(jsonMap);
+        data.token = jsonData['token'];
+        print("Token : " + data.token);
         return data;
       } else {
         return data;
@@ -210,6 +212,27 @@ class AdminData {
     } catch (e) {
       print(e);
       return null;
+    }
+  }
+
+  Future<AdminModel?> getSingleAdmin(int idAdmin) async {
+    AdminModel? model;
+    try {
+      var response =
+          await http.get(Uri.parse("${hostData}/user/single?id_user=${idAdmin}"));
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+
+        dynamic jsonMap = (jsonData as Map<String, dynamic>)['data'];
+        model = AdminModel.getDataFromJSON(jsonMap);
+        return model;
+      } else {
+        print(response.body);
+        return model;
+      }
+    } catch (e) {
+      print(e);
+      return model;
     }
   }
 }

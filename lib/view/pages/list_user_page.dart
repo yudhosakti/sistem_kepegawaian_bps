@@ -529,7 +529,7 @@ class ListUserPage extends StatelessWidget {
                                                                         () async {
                                                                       await provider
                                                                           .deleteUser(
-                                                                              index)
+                                                                              index,context.read<AuthProvider>().adminModel!.idAdmin)
                                                                           .then(
                                                                         (value) {
                                                                           Navigator.pop(

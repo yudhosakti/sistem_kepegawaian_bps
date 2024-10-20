@@ -45,7 +45,7 @@ class AiWidget extends StatelessWidget {
                               vertical:
                                   MediaQuery.of(context).size.height * 0.004),
                           child: Container(
-                            width: MediaQuery.of(context).size.width * 0.35,
+                            width: MediaQuery.of(context).size.width * 0.42,
                             height: MediaQuery.of(context).size.height,
                             decoration: BoxDecoration(
                                 color: Color.fromRGBO(69, 80, 237, 1),
@@ -61,7 +61,7 @@ class AiWidget extends StatelessWidget {
                                               0.006),
                                   child: Container(
                                     width: MediaQuery.of(context).size.width *
-                                        0.12,
+                                        0.15,
                                     height: MediaQuery.of(context).size.height,
                                     decoration: BoxDecoration(
                                         color: Colors.white,
@@ -268,7 +268,11 @@ class AiWidget extends StatelessWidget {
                                           top: MediaQuery.of(context)
                                                   .size
                                                   .height *
-                                              0.005),
+                                              0.005,
+                                          bottom: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.01),
                                       child: Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -339,12 +343,16 @@ class AiWidget extends StatelessWidget {
               ],
             )
           : Center(
-              child: Text(
-                "Hanya Admin yang bisa menggunakan fitur ini ",
-                style: GoogleFonts.poppins(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.01),
+                child: Text(
+                  "Hanya Admin yang bisa menggunakan fitur ini ",
+                  style: GoogleFonts.poppins(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16),
+                ),
               ),
             ),
     );

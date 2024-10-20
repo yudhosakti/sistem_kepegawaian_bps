@@ -98,6 +98,12 @@ class GeminiChatProvider extends ChangeNotifier {
       informationEmployee();
       listChat.add(ChatModel(
           idChat: 1, messsage: message, sendAt: sendAt, sender: "User"));
+      listChat.add(ChatModel(
+          idChat: -99,
+          messsage: 'AI Sedang mengetik pesan',
+          sendAt: sendAt,
+          sender: "AI"));
+
       notifyListeners();
 
       final prompt =
@@ -106,7 +112,7 @@ class GeminiChatProvider extends ChangeNotifier {
       ChatModel aiChat = await DecisionData()
           .addDecisionChat(idDecision, 'User', message, prompt);
       resetChat();
-
+      listChat.remove(listChat.last);
       listChat.add(aiChat);
       isLoading = false;
       notifyListeners();

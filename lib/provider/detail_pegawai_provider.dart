@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -12,19 +11,19 @@ import 'package:simpeg/models/pegawai_get_model.dart';
 class DetailPegawaiProvider extends ChangeNotifier {
   PegawaiDetailModel? pegawaiDetailModel;
   List<PangkatGolonganModel> pangkatGolongan = [
-      PangkatGolonganModel(golongan: "2A", pangkat: "Pengatur Muda"),
-      PangkatGolonganModel(golongan: "2B", pangkat: "Pengatur Muda Tingkat 1"),
-      PangkatGolonganModel(golongan: "2C", pangkat: "Pengatur"),
-      PangkatGolonganModel(golongan: "2D", pangkat: "Pengatur Tingkat 1"),
-      PangkatGolonganModel(golongan: "3A", pangkat: "Penata Muda"),
-      PangkatGolonganModel(golongan: "3B", pangkat: "Penata Muda Tingkat 1"),
-      PangkatGolonganModel(golongan: "3C", pangkat: "Penata"),
-      PangkatGolonganModel(golongan: "3D", pangkat: "Penata Tingkat 1"),
-      PangkatGolonganModel(golongan: "4A", pangkat: "Pembina"),
-      PangkatGolonganModel(golongan: "4B", pangkat: "Pembina Tingkat 1"),
-      PangkatGolonganModel(golongan: "4C", pangkat: "Pembina Utama Muda"),
-      PangkatGolonganModel(golongan: "4D", pangkat: "Pembina Utama Madya"),
-      PangkatGolonganModel(golongan: "4E", pangkat: "Pembina Utama")
+    PangkatGolonganModel(golongan: "2A", pangkat: "Pengatur Muda"),
+    PangkatGolonganModel(golongan: "2B", pangkat: "Pengatur Muda Tingkat 1"),
+    PangkatGolonganModel(golongan: "2C", pangkat: "Pengatur"),
+    PangkatGolonganModel(golongan: "2D", pangkat: "Pengatur Tingkat 1"),
+    PangkatGolonganModel(golongan: "3A", pangkat: "Penata Muda"),
+    PangkatGolonganModel(golongan: "3B", pangkat: "Penata Muda Tingkat 1"),
+    PangkatGolonganModel(golongan: "3C", pangkat: "Penata"),
+    PangkatGolonganModel(golongan: "3D", pangkat: "Penata Tingkat 1"),
+    PangkatGolonganModel(golongan: "4A", pangkat: "Pembina"),
+    PangkatGolonganModel(golongan: "4B", pangkat: "Pembina Tingkat 1"),
+    PangkatGolonganModel(golongan: "4C", pangkat: "Pembina Utama Muda"),
+    PangkatGolonganModel(golongan: "4D", pangkat: "Pembina Utama Madya"),
+    PangkatGolonganModel(golongan: "4E", pangkat: "Pembina Utama")
   ];
 
   TextEditingController etEditField = TextEditingController();
@@ -490,13 +489,12 @@ class DetailPegawaiProvider extends ChangeNotifier {
         fileImage = File(platformFile!.path);
         print(fileImage!.path);
         if (await updateImageOnly()) {
-           notifyListeners();
-           return true;
+          notifyListeners();
+          return true;
         } else {
-           notifyListeners();
-           return false;
+          notifyListeners();
+          return false;
         }
-       
       }
     } catch (e) {
       return false;
@@ -510,6 +508,10 @@ class DetailPegawaiProvider extends ChangeNotifier {
     } else {
       return false;
     }
+  }
+
+  void resetBehavior() {
+    etEditOtherField.text = '';
   }
 
   void setLoading(bool loaState) {
