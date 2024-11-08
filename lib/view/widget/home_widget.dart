@@ -11,6 +11,7 @@ import 'package:simpeg/view/pages/detail_pegawai_page.dart';
 import 'package:simpeg/view/pages/detail_user_page.dart';
 import 'package:simpeg/view/pages/list_employee_page.dart';
 import 'package:simpeg/view/pages/list_user_page.dart';
+import 'package:simpeg/view/pages/log_page.dart';
 import 'package:simpeg/view/pages/search_employee_page.dart';
 import 'package:simpeg/view/pages/validate_pegawai_page.dart';
 
@@ -293,7 +294,7 @@ class HomeWidget extends StatelessWidget {
                                                   0.03,
                                             ),
                                             MenuButtonWidget(
-                                              route: AddUserPage(),
+                                              route: LogPage(),
                                               sub: 'Activity',
                                               title: "Log",
                                             )

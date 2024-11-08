@@ -11,6 +11,8 @@ import 'package:simpeg/provider/edit_user_provider.dart';
 import 'package:simpeg/provider/employee_filter_provider.dart';
 import 'package:simpeg/provider/gemini_chat_provider.dart';
 import 'package:simpeg/provider/search_pegawai_provider.dart';
+import 'package:simpeg/provider/steganograph_decrypt_provider.dart';
+import 'package:simpeg/provider/steganograph_encrypt_provider.dart';
 import 'package:simpeg/provider/tambah_karyawan_provider.dart';
 import 'package:simpeg/provider/user_filter_provider.dart';
 import 'package:simpeg/provider/validate_pegawai_provier.dart';
@@ -54,7 +56,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => EditUserProvider(),
-        )
+        ),
+        ChangeNotifierProvider(create: (context) => SteganographEncryptProvider(),),
+        ChangeNotifierProvider(create: (context) => SteganographDecryptProvider(),)
       ],
       child: MyApp(
         token: prefs.getString('token'),

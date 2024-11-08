@@ -62,7 +62,7 @@ class AuthProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     if (validateLogin()) {
-      await AdminData().loginUser(etEmailLogin.text, etPasswordLogin.text).then(
+      await AdminData().loginUser(etEmailLogin.text, etPasswordLogin.text,1).then(
         (value) {
           if (value != null) {
             adminModel = value;

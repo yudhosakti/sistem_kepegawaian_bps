@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simpeg/provider/auth_provider.dart';
+import 'package:simpeg/view/pages/image_login_page.dart';
 import 'package:simpeg/view/pages/main_page.dart';
 import 'package:simpeg/view/pages/onboarding_page.dart';
 import 'package:simpeg/view/pages/register_page.dart';
@@ -186,7 +187,13 @@ class _LoginPageState extends State<LoginPage> {
                       color: Colors.grey,
                       borderRadius: BorderRadius.all(Radius.circular(12))),
                   child: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacement(context, MaterialPageRoute(
+                          builder: (context) {
+                            return ImageLoginPage();
+                          },
+                        ));
+                      },
                       icon: Icon(
                         size: 36,
                         Icons.fingerprint,

@@ -318,11 +318,7 @@ class DetailPegawaiPage extends StatelessWidget {
                               right: MediaQuery.of(context).size.width * 0.3),
                           child: InformationDetailComponentWidget(
                             code: 8,
-                            isEditable:
-                                context.read<AuthProvider>().adminModel!.role ==
-                                        'Admin'
-                                    ? true
-                                    : false,
+                            isEditable: false,
                             data: provider.pegawaiDetailModel!.pangkat,
                             title: "Pangkat",
                           ),
@@ -769,7 +765,7 @@ class ItemDetailComponentWidget extends StatelessWidget {
                     minHeight: MediaQuery.of(context).size.height * 0.08,
                   ),
                   child: Center(
-                    child: IconButton(
+                    child: context.read<AuthProvider>().adminModel!.role == 'Admin' ? IconButton(
                         onPressed: () {
                           showDialog(
                             context: context,
@@ -818,7 +814,7 @@ class ItemDetailComponentWidget extends StatelessWidget {
                         icon: Icon(
                           Icons.delete,
                           color: Colors.red,
-                        )),
+                        )) : Container(),
                   ),
                 ),
                 Expanded(
