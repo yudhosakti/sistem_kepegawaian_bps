@@ -119,6 +119,8 @@ class _LoginPageState extends State<LoginPage> {
                         if (await provider.loginUser()) {
                           preferences.setString(
                               'token', provider.adminModel!.token);
+                          preferences.setString(
+                              'id', provider.adminModel!.idAdmin.toString());
                           Navigator.pushReplacement(context, MaterialPageRoute(
                             builder: (context) {
                               return MainPage();

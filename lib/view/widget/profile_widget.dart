@@ -159,6 +159,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                                   .resetUser();
                                               preferences.setString(
                                                   'token', '');
+                                              preferences.setString(
+                                                  'id', '');
                                               Navigator.pushReplacement(
                                                   context,
                                                   MaterialPageRoute(

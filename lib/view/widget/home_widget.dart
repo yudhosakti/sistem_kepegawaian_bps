@@ -1,10 +1,13 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:simpeg/data/admin_data.dart';
 import 'package:simpeg/data/pegawai_data.dart';
 import 'package:simpeg/models/admin_model.dart';
 import 'package:simpeg/provider/auth_provider.dart';
+import 'package:simpeg/provider/sqflite_provider.dart';
 import 'package:simpeg/view/pages/add_employee_page.dart';
 import 'package:simpeg/view/pages/add_user_page.dart';
 import 'package:simpeg/view/pages/detail_pegawai_page.dart';
@@ -36,12 +39,54 @@ class HomeWidget extends StatelessWidget {
                 color: Colors.white,
               ))
         ],
-        leading: IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.notifications,
-              color: Colors.white,
-            )),
+        leading: Consumer<SqfliteProvider>(builder: (context, provider, child) {
+          return IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text("Konfirmasi Backup Data"),
+                      content: Text(
+                          "Apakah Anda Ingin Melakukan Backup Data Pegawai ?"),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              "Cancel",
+                              style:
+                                  GoogleFonts.poppins(color: Colors.redAccent),
+                            )),
+                        provider.isLoading
+                            ? CircularProgressIndicator()
+                            : TextButton(
+                                onPressed: () async {
+                                  if (await provider.initilizeDatabase()) {
+                                    Fluttertoast.showToast(
+                                        msg: "Backup Berhasil");
+                                    Navigator.pop(context);
+                                  } else {
+                                    Fluttertoast.showToast(msg: "Backup Gagal");
+                                    Navigator.pop(context);
+                                  }
+                                },
+                                child: Text(
+                                  "Ok",
+                                  style: GoogleFonts.poppins(
+                                      color: Colors.blueAccent),
+                                ))
+                      ],
+                    );
+                  },
+                );
+              },
+              icon: Icon(
+                Icons.notifications,
+                color: Colors.white,
+              ));
+        }),
         backgroundColor: Color.fromRGBO(121, 102, 255, 1),
       ),
       body: ListView(
@@ -369,91 +414,135 @@ class HomeWidget extends StatelessWidget {
                     Expanded(
                         child: Container(
                       child: FutureBuilder(
-                          future: PegawaiData().getRecentPegawai(),
+                          future:
+                              context.read<SqfliteProvider>().checkKoneksi(),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               return Center(
                                 child: CircularProgressIndicator(),
                               );
-                            } else if (snapshot.data!.isEmpty) {
-                              return Center(
-                                child: Text("No Data Yet Sorry"),
-                              );
                             } else {
-                              return ListView.builder(
-                                itemCount: snapshot.data!.length,
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal:
-                                            MediaQuery.of(context).size.width *
-                                                0.01,
-                                        vertical:
-                                            MediaQuery.of(context).size.height *
-                                                0.005),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(context,
-                                            MaterialPageRoute(
-                                          builder: (context) {
-                                            return DetailPegawaiPage(
-                                                idPegawai: snapshot
-                                                    .data![index].idPegawai);
-                                          },
-                                        ));
-                                      },
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.18,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Container(
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.07,
-                                              decoration: BoxDecoration(
-                                                  image: snapshot.data![index]
-                                                              .foto ==
-                                                          ''
-                                                      ? DecorationImage(
-                                                          opacity: 0.6,
-                                                          image: AssetImage(
-                                                              'assets/default_profile.jpg'),
-                                                        )
-                                                      : DecorationImage(
-                                                          image: NetworkImage(
-                                                              snapshot
-                                                                  .data![index]
-                                                                  .foto)),
-                                                  color: Colors.grey,
-                                                  shape: BoxShape.circle),
+                              bool isConnect = false;
+                              for (var i = 0; i < snapshot.data!.length; i++) {
+                                if (snapshot.data![i] ==
+                                        ConnectivityResult.wifi ||
+                                    snapshot.data![i] ==
+                                        ConnectivityResult.mobile) {
+                                  isConnect = true;
+                                  break;
+                                }
+                              }
+                              return FutureBuilder(
+                                  future: !isConnect
+                                      ? context
+                                          .read<SqfliteProvider>()
+                                          .getAllPegawaiOff()
+                                      : PegawaiData().getRecentPegawai(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    } else if (snapshot.data!.isEmpty) {
+                                      return Center(
+                                        child: Text("No Data Yet Sorry"),
+                                      );
+                                    } else {
+                                      return ListView.builder(
+                                        itemCount: snapshot.data!.length > 5
+                                            ? 5
+                                            : snapshot.data!.length,
+                                        scrollDirection: Axis.horizontal,
+                                        itemBuilder: (context, index) {
+                                          return Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal:
+                                                    MediaQuery.of(context)
+                                                            .size
+                                                            .width *
+                                                        0.01,
+                                                vertical: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.005),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                  builder: (context) {
+                                                    return DetailPegawaiPage(
+                                                        idPegawai: snapshot
+                                                            .data![index]
+                                                            .idPegawai);
+                                                  },
+                                                ));
+                                              },
+                                              child: Container(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.18,
+                                                height: MediaQuery.of(context)
+                                                    .size
+                                                    .height,
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    Container(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                              .size
+                                                              .width,
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height *
+                                                              0.07,
+                                                      decoration: BoxDecoration(
+                                                          image: snapshot
+                                                                      .data![
+                                                                          index]
+                                                                      .foto ==
+                                                                  ''
+                                                              ? DecorationImage(
+                                                                  opacity: 0.6,
+                                                                  image: AssetImage(
+                                                                      'assets/default_profile.jpg'),
+                                                                )
+                                                              : DecorationImage(
+                                                                  image: NetworkImage(
+                                                                      snapshot
+                                                                          .data![
+                                                                              index]
+                                                                          .foto)),
+                                                          color: Colors.grey,
+                                                          shape:
+                                                              BoxShape.circle),
+                                                    ),
+                                                    Text(
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      snapshot.data![index]
+                                                          .namaPegawai,
+                                                      style: GoogleFonts.nunito(
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
                                             ),
-                                            Text(
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              snapshot.data![index].namaPegawai,
-                                              style: GoogleFonts.nunito(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w600),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              );
+                                          );
+                                        },
+                                      );
+                                    }
+                                  });
                             }
                           }),
                     ))

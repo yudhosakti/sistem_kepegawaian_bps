@@ -177,6 +177,8 @@ class _ImageLoginPageState extends State<ImageLoginPage> {
                                 authprov.updateUserInformation(admin);
                                 preferences.setString(
                               'token', authprov.adminModel!.token);
+                              preferences.setString(
+                              'id', admin.idAdmin.toString());
                                 Navigator.pushReplacement(context,
                                     MaterialPageRoute(
                                   builder: (context) {

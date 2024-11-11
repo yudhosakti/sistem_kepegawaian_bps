@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -5,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:simpeg/data/pegawai_data.dart';
 import 'package:simpeg/provider/auth_provider.dart';
 import 'package:simpeg/provider/detail_pegawai_provider.dart';
+import 'package:simpeg/provider/sqflite_provider.dart';
 
 class DetailPegawaiPage extends StatelessWidget {
   final int idPegawai;
@@ -21,387 +23,483 @@ class DetailPegawaiPage extends StatelessWidget {
         ),
       ),
       body: FutureBuilder(
-          future: PegawaiData().getDetailPegawai(idPegawai),
+          future: context.read<SqfliteProvider>().checkKoneksi(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
                 child: CircularProgressIndicator(),
               );
-            } else if (snapshot.data == null) {
-              return Center(
-                child: Text(
-                  "Data Not Found",
-                  style: GoogleFonts.nunito(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 23),
-                ),
-              );
             } else {
-              context
-                  .read<DetailPegawaiProvider>()
-                  .setInitialPegawai(snapshot.data!);
-              context.read<DetailPegawaiProvider>().resetAll();
-              return Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width * 0.01),
-                child: Consumer<DetailPegawaiProvider>(
-                    builder: (context, provider, child) {
-                  if (provider.pegawaiDetailModel == null) {
-                    return Center(
-                      child: Text(
-                        "Data Not Found",
-                        style: GoogleFonts.nunito(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 23),
-                      ),
-                    );
-                  } else {
-                    return ListView(
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * 0.2,
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.02,
+              bool isConnect = false;
+              for (var i = 0; i < snapshot.data!.length; i++) {
+                if (snapshot.data![i] == ConnectivityResult.wifi ||
+                    snapshot.data![i] == ConnectivityResult.mobile) {
+                  isConnect = true;
+                  break;
+                }
+              }
+              return FutureBuilder(
+                  future: !isConnect
+                      ? context
+                          .read<SqfliteProvider>()
+                          .getPegawaiDetailOff(idPegawai)
+                      : PegawaiData().getDetailPegawai(idPegawai),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (snapshot.data == null) {
+                      return Center(
+                        child: Text(
+                          "Data Not Found",
+                          style: GoogleFonts.nunito(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 23),
+                        ),
+                      );
+                    } else {
+                      context
+                          .read<DetailPegawaiProvider>()
+                          .setInitialPegawai(snapshot.data!);
+                      context.read<DetailPegawaiProvider>().resetAll();
+                      return Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal:
+                                MediaQuery.of(context).size.width * 0.01),
+                        child: Consumer<DetailPegawaiProvider>(
+                            builder: (context, provider, child) {
+                          if (provider.pegawaiDetailModel == null) {
+                            return Center(
+                              child: Text(
+                                "Data Not Found",
+                                style: GoogleFonts.nunito(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 23),
                               ),
-                              Builder(builder: (context) {
-                                if (provider.fileImage == null) {
-                                  return Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.3,
-                                    height: MediaQuery.of(context).size.height,
-                                    decoration: BoxDecoration(
-                                        color: Colors.grey,
-                                        shape: BoxShape.circle,
-                                        image: provider
-                                                    .pegawaiDetailModel!.foto ==
-                                                ''
-                                            ? DecorationImage(
-                                                opacity: 0.6,
-                                                image: AssetImage(
-                                                    'assets/default_profile.jpg'))
-                                            : DecorationImage(
-                                                image: NetworkImage(provider
-                                                    .pegawaiDetailModel!.foto),
-                                                fit: BoxFit.fill)),
-                                    child: context
-                                                .read<AuthProvider>()
-                                                .adminModel!
-                                                .role ==
-                                            'Admin'
-                                        ? Stack(
-                                            children: [
-                                              Positioned(
-                                                right: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.03,
-                                                bottom: MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.01,
-                                                child: Container(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.1,
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.05,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                  child: IconButton(
-                                                      onPressed: () async {
-                                                        if (await provider
-                                                            .takePickture()) {
-                                                          Fluttertoast.showToast(
-                                                              msg: "Success");
-                                                        } else {
-                                                          Fluttertoast.showToast(
-                                                              msg: "Canceled");
-                                                        }
-                                                      },
-                                                      icon: Icon(
-                                                        Icons.image,
-                                                        color: Colors.black,
-                                                      )),
-                                                ),
-                                              )
-                                            ],
-                                          )
-                                        : Container(),
-                                  );
-                                } else {
-                                  return Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.3,
-                                    height: MediaQuery.of(context).size.height,
-                                    decoration: BoxDecoration(
-                                        color: Colors.grey,
-                                        shape: BoxShape.circle,
-                                        image: DecorationImage(
-                                            image:
-                                                FileImage(provider.fileImage!),
-                                            fit: BoxFit.fill)),
-                                    child: context
-                                                .read<AuthProvider>()
-                                                .adminModel!
-                                                .role ==
-                                            'Admin'
-                                        ? Stack(
-                                            children: [
-                                              Positioned(
-                                                right: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.03,
-                                                bottom: MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.01,
-                                                child: Container(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.1,
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.05,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                  child: IconButton(
-                                                      onPressed: () async {
-                                                        if (await provider
-                                                            .takePickture()) {
-                                                          Fluttertoast.showToast(
-                                                              msg: "Success");
-                                                        } else {
-                                                          Fluttertoast.showToast(
-                                                              msg: "Canceled");
-                                                        }
-                                                      },
-                                                      icon: Icon(
-                                                        Icons.image,
-                                                        color: Colors.black,
-                                                      )),
-                                                ),
-                                              )
-                                            ],
-                                          )
-                                        : Container(),
-                                  );
-                                }
-                              }),
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.02,
-                              ),
-                              Expanded(
-                                  child: Container(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    InformationDetailComponentWidget(
-                                      code: 1,
-                                      isEditable: context
-                                                  .read<AuthProvider>()
-                                                  .adminModel!
-                                                  .role ==
-                                              'Admin'
-                                          ? true
-                                          : false,
-                                      data: provider
-                                          .pegawaiDetailModel!.namaPegawai,
-                                      title: "Nama Lengkap",
-                                    ),
-                                    InformationDetailComponentWidget(
-                                      code: 2,
-                                      isEditable: context
-                                                  .read<AuthProvider>()
-                                                  .adminModel!
-                                                  .role ==
-                                              'Admin'
-                                          ? true
-                                          : false,
-                                      data: provider.pegawaiDetailModel!.newNip
-                                          .toString(),
-                                      title: "New NIP",
-                                    )
-                                  ],
+                            );
+                          } else {
+                            return ListView(
+                              children: [
+                                Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.2,
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.02,
+                                      ),
+                                      Builder(builder: (context) {
+                                        if (provider.fileImage == null) {
+                                          return Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.3,
+                                            height: MediaQuery.of(context)
+                                                .size
+                                                .height,
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey,
+                                                shape: BoxShape.circle,
+                                                image: provider
+                                                            .pegawaiDetailModel!
+                                                            .foto ==
+                                                        ''
+                                                    ? DecorationImage(
+                                                        opacity: 0.6,
+                                                        image: AssetImage(
+                                                            'assets/default_profile.jpg'))
+                                                    : DecorationImage(
+                                                        image: NetworkImage(provider
+                                                            .pegawaiDetailModel!
+                                                            .foto),
+                                                        fit: BoxFit.fill)),
+                                            child: context
+                                                        .read<AuthProvider>()
+                                                        .adminModel!
+                                                        .role ==
+                                                    'Admin'
+                                                ? Stack(
+                                                    children: [
+                                                      Positioned(
+                                                        right: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.03,
+                                                        bottom: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .height *
+                                                            0.01,
+                                                        child: Container(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.1,
+                                                          height: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .height *
+                                                              0.05,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.white,
+                                                            shape:
+                                                                BoxShape.circle,
+                                                          ),
+                                                          child: IconButton(
+                                                              onPressed:
+                                                                  () async {
+                                                                if (await provider
+                                                                    .takePickture()) {
+                                                                  Fluttertoast
+                                                                      .showToast(
+                                                                          msg:
+                                                                              "Success");
+                                                                } else {
+                                                                  Fluttertoast
+                                                                      .showToast(
+                                                                          msg:
+                                                                              "Canceled");
+                                                                }
+                                                              },
+                                                              icon: Icon(
+                                                                Icons.image,
+                                                                color: Colors
+                                                                    .black,
+                                                              )),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  )
+                                                : Container(),
+                                          );
+                                        } else {
+                                          return Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.3,
+                                            height: MediaQuery.of(context)
+                                                .size
+                                                .height,
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey,
+                                                shape: BoxShape.circle,
+                                                image: DecorationImage(
+                                                    image: FileImage(
+                                                        provider.fileImage!),
+                                                    fit: BoxFit.fill)),
+                                            child: context
+                                                        .read<AuthProvider>()
+                                                        .adminModel!
+                                                        .role ==
+                                                    'Admin'
+                                                ? Stack(
+                                                    children: [
+                                                      Positioned(
+                                                        right: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.03,
+                                                        bottom: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .height *
+                                                            0.01,
+                                                        child: Container(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.1,
+                                                          height: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .height *
+                                                              0.05,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.white,
+                                                            shape:
+                                                                BoxShape.circle,
+                                                          ),
+                                                          child: IconButton(
+                                                              onPressed:
+                                                                  () async {
+                                                                if (await provider
+                                                                    .takePickture()) {
+                                                                  Fluttertoast
+                                                                      .showToast(
+                                                                          msg:
+                                                                              "Success");
+                                                                } else {
+                                                                  Fluttertoast
+                                                                      .showToast(
+                                                                          msg:
+                                                                              "Canceled");
+                                                                }
+                                                              },
+                                                              icon: Icon(
+                                                                Icons.image,
+                                                                color: Colors
+                                                                    .black,
+                                                              )),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  )
+                                                : Container(),
+                                          );
+                                        }
+                                      }),
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.02,
+                                      ),
+                                      Expanded(
+                                          child: Container(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            InformationDetailComponentWidget(
+                                              code: 1,
+                                              isEditable: context
+                                                          .read<AuthProvider>()
+                                                          .adminModel!
+                                                          .role ==
+                                                      'Admin'
+                                                  ? true
+                                                  : false,
+                                              data: provider.pegawaiDetailModel!
+                                                  .namaPegawai,
+                                              title: "Nama Lengkap",
+                                            ),
+                                            InformationDetailComponentWidget(
+                                              code: 2,
+                                              isEditable: context
+                                                          .read<AuthProvider>()
+                                                          .adminModel!
+                                                          .role ==
+                                                      'Admin'
+                                                  ? true
+                                                  : false,
+                                              data: provider
+                                                  .pegawaiDetailModel!.newNip
+                                                  .toString(),
+                                              title: "New NIP",
+                                            )
+                                          ],
+                                        ),
+                                      ))
+                                    ],
+                                  ),
                                 ),
-                              ))
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              right: MediaQuery.of(context).size.width * 0.3),
-                          child: InformationDetailComponentWidget(
-                            code: 3,
-                            isEditable:
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      right: MediaQuery.of(context).size.width *
+                                          0.3),
+                                  child: InformationDetailComponentWidget(
+                                    code: 3,
+                                    isEditable: context
+                                                .read<AuthProvider>()
+                                                .adminModel!
+                                                .role ==
+                                            'Admin'
+                                        ? true
+                                        : false,
+                                    data: provider.pegawaiDetailModel!.oldNip
+                                        .toString(),
+                                    title: "Old NIP",
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      right: MediaQuery.of(context).size.width *
+                                          0.3),
+                                  child: InformationDetailComponentWidget(
+                                    code: 4,
+                                    isEditable: context
+                                                .read<AuthProvider>()
+                                                .adminModel!
+                                                .role ==
+                                            'Admin'
+                                        ? true
+                                        : false,
+                                    data: provider
+                                        .pegawaiDetailModel!.jenisKelamin,
+                                    title: "Jenis Kelamin",
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      right: MediaQuery.of(context).size.width *
+                                          0.3),
+                                  child: InformationDetailComponentWidget(
+                                    code: 5,
+                                    isEditable: context
+                                                .read<AuthProvider>()
+                                                .adminModel!
+                                                .role ==
+                                            'Admin'
+                                        ? true
+                                        : false,
+                                    data: provider
+                                        .pegawaiDetailModel!.tempatLahir,
+                                    title: "Tempat Lahir",
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      right: MediaQuery.of(context).size.width *
+                                          0.3),
+                                  child: InformationDetailComponentWidget(
+                                    code: 6,
+                                    isEditable: context
+                                                .read<AuthProvider>()
+                                                .adminModel!
+                                                .role ==
+                                            'Admin'
+                                        ? true
+                                        : false,
+                                    data: provider
+                                        .pegawaiDetailModel!.tanggalLahir,
+                                    title: "Tanggal Lahir",
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      right: MediaQuery.of(context).size.width *
+                                          0.3),
+                                  child: InformationDetailComponentWidget(
+                                    code: 7,
+                                    isEditable: context
+                                                .read<AuthProvider>()
+                                                .adminModel!
+                                                .role ==
+                                            'Admin'
+                                        ? true
+                                        : false,
+                                    data: provider.pegawaiDetailModel!.golongan,
+                                    title: "Golongan",
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      right: MediaQuery.of(context).size.width *
+                                          0.3),
+                                  child: InformationDetailComponentWidget(
+                                    code: 8,
+                                    isEditable: false,
+                                    data: provider.pegawaiDetailModel!.pangkat,
+                                    title: "Pangkat",
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      right: MediaQuery.of(context).size.width *
+                                          0.3),
+                                  child: InformationDetailComponentWidget(
+                                    code: 9,
+                                    isEditable: context
+                                                .read<AuthProvider>()
+                                                .adminModel!
+                                                .role ==
+                                            'Admin'
+                                        ? true
+                                        : false,
+                                    data:
+                                        provider.pegawaiDetailModel!.pendidikan,
+                                    title: "Pendidikan Terakhir",
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      right: MediaQuery.of(context).size.width *
+                                          0.3),
+                                  child: InformationDetailComponentWidget(
+                                    code: 10,
+                                    isEditable: context
+                                                .read<AuthProvider>()
+                                                .adminModel!
+                                                .role ==
+                                            'Admin'
+                                        ? true
+                                        : false,
+                                    data: provider.pegawaiDetailModel!.jabatan,
+                                    title: "Jabatan",
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      right: MediaQuery.of(context).size.width *
+                                          0.3),
+                                  child: InformationDetailComponentWidget(
+                                    code: 11,
+                                    isEditable: context
+                                                .read<AuthProvider>()
+                                                .adminModel!
+                                                .role ==
+                                            'Admin'
+                                        ? true
+                                        : false,
+                                    data: provider
+                                        .pegawaiDetailModel!.pengalamanJabatan,
+                                    title: "Pengalaman Jabatan",
+                                  ),
+                                ),
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.01,
+                                ),
+                                CustomViewDetailPegawaiWidget(
+                                  code: 1,
+                                  btnTitle: "Tambah Sertifikat",
+                                  itemTitle: "Sertifikat",
+                                  title: "Sertifikat Pegawai",
+                                ),
                                 context.read<AuthProvider>().adminModel!.role ==
                                         'Admin'
-                                    ? true
-                                    : false,
-                            data:
-                                provider.pegawaiDetailModel!.oldNip.toString(),
-                            title: "Old NIP",
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              right: MediaQuery.of(context).size.width * 0.3),
-                          child: InformationDetailComponentWidget(
-                            code: 4,
-                            isEditable:
+                                    ? CustomViewDetailPegawaiWidget(
+                                        code: 2,
+                                        btnTitle: "Tambah Kelebihan",
+                                        itemTitle: "Kelebihan",
+                                        title: "Kelebihan Pegawai",
+                                      )
+                                    : Container(),
                                 context.read<AuthProvider>().adminModel!.role ==
                                         'Admin'
-                                    ? true
-                                    : false,
-                            data: provider.pegawaiDetailModel!.jenisKelamin,
-                            title: "Jenis Kelamin",
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              right: MediaQuery.of(context).size.width * 0.3),
-                          child: InformationDetailComponentWidget(
-                            code: 5,
-                            isEditable:
-                                context.read<AuthProvider>().adminModel!.role ==
-                                        'Admin'
-                                    ? true
-                                    : false,
-                            data: provider.pegawaiDetailModel!.tempatLahir,
-                            title: "Tempat Lahir",
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              right: MediaQuery.of(context).size.width * 0.3),
-                          child: InformationDetailComponentWidget(
-                            code: 6,
-                            isEditable:
-                                context.read<AuthProvider>().adminModel!.role ==
-                                        'Admin'
-                                    ? true
-                                    : false,
-                            data: provider.pegawaiDetailModel!.tanggalLahir,
-                            title: "Tanggal Lahir",
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              right: MediaQuery.of(context).size.width * 0.3),
-                          child: InformationDetailComponentWidget(
-                            code: 7,
-                            isEditable:
-                                context.read<AuthProvider>().adminModel!.role ==
-                                        'Admin'
-                                    ? true
-                                    : false,
-                            data: provider.pegawaiDetailModel!.golongan,
-                            title: "Golongan",
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              right: MediaQuery.of(context).size.width * 0.3),
-                          child: InformationDetailComponentWidget(
-                            code: 8,
-                            isEditable: false,
-                            data: provider.pegawaiDetailModel!.pangkat,
-                            title: "Pangkat",
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              right: MediaQuery.of(context).size.width * 0.3),
-                          child: InformationDetailComponentWidget(
-                            code: 9,
-                            isEditable:
-                                context.read<AuthProvider>().adminModel!.role ==
-                                        'Admin'
-                                    ? true
-                                    : false,
-                            data: provider.pegawaiDetailModel!.pendidikan,
-                            title: "Pendidikan Terakhir",
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              right: MediaQuery.of(context).size.width * 0.3),
-                          child: InformationDetailComponentWidget(
-                            code: 10,
-                            isEditable:
-                                context.read<AuthProvider>().adminModel!.role ==
-                                        'Admin'
-                                    ? true
-                                    : false,
-                            data: provider.pegawaiDetailModel!.jabatan,
-                            title: "Jabatan",
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              right: MediaQuery.of(context).size.width * 0.3),
-                          child: InformationDetailComponentWidget(
-                            code: 11,
-                            isEditable:
-                                context.read<AuthProvider>().adminModel!.role ==
-                                        'Admin'
-                                    ? true
-                                    : false,
-                            data:
-                                provider.pegawaiDetailModel!.pengalamanJabatan,
-                            title: "Pengalaman Jabatan",
-                          ),
-                        ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.01,
-                        ),
-                        CustomViewDetailPegawaiWidget(
-                          code: 1,
-                          btnTitle: "Tambah Sertifikat",
-                          itemTitle: "Sertifikat",
-                          title: "Sertifikat Pegawai",
-                        ),
-                        context.read<AuthProvider>().adminModel!.role == 'Admin'
-                            ? CustomViewDetailPegawaiWidget(
-                                code: 2,
-                                btnTitle: "Tambah Kelebihan",
-                                itemTitle: "Kelebihan",
-                                title: "Kelebihan Pegawai",
-                              )
-                            : Container(),
-                        context.read<AuthProvider>().adminModel!.role == 'Admin'
-                            ? CustomViewDetailPegawaiWidget(
-                                code: 3,
-                                btnTitle: "Tambah Kekurangan",
-                                itemTitle: "Kekurangan",
-                                title: "Kekurangan Pegawai",
-                              )
-                            : Container(),
-                        CustomViewDetailPegawaiWidget(
-                          code: 4,
-                          btnTitle: "Tambah Diklat",
-                          itemTitle: "Diklat",
-                          title: "Diklat Pegawai",
-                        )
-                      ],
-                    );
-                  }
-                }),
-              );
+                                    ? CustomViewDetailPegawaiWidget(
+                                        code: 3,
+                                        btnTitle: "Tambah Kekurangan",
+                                        itemTitle: "Kekurangan",
+                                        title: "Kekurangan Pegawai",
+                                      )
+                                    : Container(),
+                                CustomViewDetailPegawaiWidget(
+                                  code: 4,
+                                  btnTitle: "Tambah Diklat",
+                                  itemTitle: "Diklat",
+                                  title: "Diklat Pegawai",
+                                )
+                              ],
+                            );
+                          }
+                        }),
+                      );
+                    }
+                  });
             }
           }),
     );
@@ -765,56 +863,61 @@ class ItemDetailComponentWidget extends StatelessWidget {
                     minHeight: MediaQuery.of(context).size.height * 0.08,
                   ),
                   child: Center(
-                    child: context.read<AuthProvider>().adminModel!.role == 'Admin' ? IconButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: Text("Konfirmasi Hapus ${itemTitle}"),
-                                content: Text(
-                                    "Apakah anda yakin ingin menghapus ${itemTitle} ini"),
-                                actions: [
-                                  TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        "Cancel",
-                                        style: GoogleFonts.nunito(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 19),
-                                      )),
-                                  TextButton(
-                                      onPressed: () async {
-                                        if (await provider.deleteNewBehavior(
-                                            code, idData)) {
-                                          Fluttertoast.showToast(
-                                              msg: "Berhasil Hapus");
-                                          Navigator.pop(context);
-                                        } else {
-                                          Fluttertoast.showToast(
-                                              msg: "Gagal Hapus");
-                                          Navigator.pop(context);
-                                        }
-                                      },
-                                      child: Text(
-                                        "Ok",
-                                        style: GoogleFonts.nunito(
-                                            color: Colors.blueAccent,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 19),
-                                      ))
-                                ],
+                    child: context.read<AuthProvider>().adminModel!.role ==
+                            'Admin'
+                        ? IconButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title:
+                                        Text("Konfirmasi Hapus ${itemTitle}"),
+                                    content: Text(
+                                        "Apakah anda yakin ingin menghapus ${itemTitle} ini"),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text(
+                                            "Cancel",
+                                            style: GoogleFonts.nunito(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 19),
+                                          )),
+                                      TextButton(
+                                          onPressed: () async {
+                                            if (await provider
+                                                .deleteNewBehavior(
+                                                    code, idData)) {
+                                              Fluttertoast.showToast(
+                                                  msg: "Berhasil Hapus");
+                                              Navigator.pop(context);
+                                            } else {
+                                              Fluttertoast.showToast(
+                                                  msg: "Gagal Hapus");
+                                              Navigator.pop(context);
+                                            }
+                                          },
+                                          child: Text(
+                                            "Ok",
+                                            style: GoogleFonts.nunito(
+                                                color: Colors.blueAccent,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 19),
+                                          ))
+                                    ],
+                                  );
+                                },
                               );
                             },
-                          );
-                        },
-                        icon: Icon(
-                          Icons.delete,
-                          color: Colors.red,
-                        )) : Container(),
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ))
+                        : Container(),
                   ),
                 ),
                 Expanded(
