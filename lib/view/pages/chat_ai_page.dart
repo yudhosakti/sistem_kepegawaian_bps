@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:simpeg/data/decision_data.dart';
 import 'package:simpeg/data/pegawai_data.dart';
 import 'package:simpeg/provider/gemini_chat_provider.dart';
+import 'package:simpeg/view/pages/main_page.dart';
 import 'package:simpeg/view/widget/employee_pick_widget.dart';
 
 class ChatAiPage extends StatefulWidget {
@@ -37,8 +38,6 @@ class _ChatAiPageState extends State<ChatAiPage> {
     double screenHeight = physicalHeight / devicePixelRatio;
     return screenHeight;
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +71,11 @@ class _ChatAiPageState extends State<ChatAiPage> {
                 backgroundColor: Color.fromRGBO(121, 102, 255, 1),
                 leading: IconButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MainPage(),
+                          ));
                     },
                     icon: Icon(
                       Icons.arrow_back,

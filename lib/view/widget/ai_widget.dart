@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:popover/popover.dart';
 import 'package:provider/provider.dart';
 import 'package:simpeg/data/decision_data.dart';
 import 'package:simpeg/models/decision_model.dart';
@@ -9,6 +10,7 @@ import 'package:simpeg/provider/gemini_chat_provider.dart';
 import 'package:simpeg/view/pages/chat_ai_page.dart';
 import 'package:simpeg/view/pages/detail_pegawai_page.dart';
 import 'package:simpeg/view/pages/search_employee_page.dart';
+import 'package:simpeg/view/widget/list_item_widget.dart';
 
 class AiWidget extends StatelessWidget {
   const AiWidget({super.key});
@@ -140,9 +142,10 @@ class AiWidget extends StatelessWidget {
                                                                     idDecision);
                                                                 Navigator.pop(
                                                                     context);
-                                                                Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
+                                                                Navigator
+                                                                    .pushReplacement(
+                                                                        context,
+                                                                        MaterialPageRoute(
                                                                   builder:
                                                                       (context) {
                                                                     return ChatAiPage(
@@ -195,13 +198,6 @@ class AiWidget extends StatelessWidget {
                             ),
                           ),
                         ),
-                        IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.search,
-                              size: 32,
-                              color: Colors.black,
-                            ))
                       ],
                     ),
                   ),
@@ -229,115 +225,158 @@ class AiWidget extends StatelessWidget {
                         return NoDataWidget();
                       } else {
                         List<DecisionModel> dataDecision = snapshot.data!;
-                        return ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: dataDecision.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal:
-                                      MediaQuery.of(context).size.width * 0.01,
-                                  vertical: MediaQuery.of(context).size.height *
-                                      0.01),
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) {
-                                      return ChatAiPage(
-                                          idDecision:
-                                              dataDecision[index].idDecision);
-                                    },
-                                  ));
-                                },
-                                child: Card(
-                                  color: Colors.blueAccent,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10))),
-                                  elevation: 5,
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    constraints: BoxConstraints(
-                                        minHeight:
-                                            MediaQuery.of(context).size.height *
-                                                0.1,
-                                        maxHeight: double.infinity),
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          top: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.005,
-                                          bottom: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.01),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.1,
-                                            constraints: BoxConstraints(
-                                                minHeight:
-                                                    MediaQuery.of(context)
-                                                            .size
-                                                            .height *
-                                                        0.1,
-                                                maxHeight: double.infinity),
-                                            child: Center(
-                                              child: Icon(
-                                                Icons.message,
-                                                color: Colors.white,
+                        context
+                            .read<GeminiChatProvider>()
+                            .initialDataDecision(dataDecision);
+                        return Consumer<GeminiChatProvider>(
+                            builder: (context, provider, child) {
+                          return ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: provider.dataDecision.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal:
+                                        MediaQuery.of(context).size.width *
+                                            0.01,
+                                    vertical:
+                                        MediaQuery.of(context).size.height *
+                                            0.01),
+                                child: Builder(builder: (context) {
+                                  return GestureDetector(
+                                    onLongPress: () {
+                                      showPopover(
+                                          arrowHeight: 20,
+                                          context: context,
+                                          bodyBuilder: (context) => ListItems(
+                                                idChat: provider
+                                                    .dataDecision[index]
+                                                    .idDecision,
+                                                title: provider
+                                                    .dataDecision[index].title,
                                               ),
-                                            ),
+                                          onPop: () =>
+                                              print('Popover was popped!'),
+                                          direction: PopoverDirection.bottom,
+                                          backgroundColor: Colors.white,
+                                          constraints: BoxConstraints(
+                                              maxWidth: 250,
+                                              maxHeight: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.12,
+                                              minHeight: 0));
+                                    },
+                                    onTap: () {
+                                      Navigator.pushReplacement(context,
+                                          MaterialPageRoute(
+                                        builder: (context) {
+                                          return ChatAiPage(
+                                              idDecision: provider
+                                                  .dataDecision[index]
+                                                  .idDecision);
+                                        },
+                                      ));
+                                    },
+                                    child: Card(
+                                      color: Colors.blueAccent,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10))),
+                                      elevation: 5,
+                                      child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        constraints: BoxConstraints(
+                                            minHeight: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.1,
+                                            maxHeight: double.infinity),
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                              top: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.005,
+                                              bottom: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.01),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.1,
+                                                constraints: BoxConstraints(
+                                                    minHeight:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.1,
+                                                    maxHeight: double.infinity),
+                                                child: Center(
+                                                  child: Icon(
+                                                    Icons.message,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                  child: Container(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      provider
+                                                          .dataDecision[index]
+                                                          .title,
+                                                      style: GoogleFonts.mulish(
+                                                          color: Colors.white,
+                                                          fontSize: 20,
+                                                          fontWeight:
+                                                              FontWeight.w700),
+                                                    ),
+                                                    Text(
+                                                      maxLines: 2,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      provider
+                                                                  .dataDecision[
+                                                                      index]
+                                                                  .lastChat ==
+                                                              ''
+                                                          ? "No History Chat"
+                                                          : provider
+                                                              .dataDecision[
+                                                                  index]
+                                                              .lastChat,
+                                                      style: GoogleFonts.mulish(
+                                                          color: Colors.white,
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ))
+                                            ],
                                           ),
-                                          Expanded(
-                                              child: Container(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  dataDecision[index].title,
-                                                  style: GoogleFonts.mulish(
-                                                      color: Colors.white,
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.w700),
-                                                ),
-                                                Text(
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  dataDecision[index]
-                                                              .lastChat ==
-                                                          ''
-                                                      ? "No History Chat"
-                                                      : dataDecision[index]
-                                                          .lastChat,
-                                                  style: GoogleFonts.mulish(
-                                                      color: Colors.white,
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                                ),
-                                              ],
-                                            ),
-                                          ))
-                                        ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        );
+                                  );
+                                }),
+                              );
+                            },
+                          );
+                        });
                       }
                     })
               ],

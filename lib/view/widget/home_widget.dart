@@ -83,7 +83,7 @@ class HomeWidget extends StatelessWidget {
                 );
               },
               icon: Icon(
-                Icons.notifications,
+                Icons.backup,
                 color: Colors.white,
               ));
         }),
@@ -518,7 +518,9 @@ class HomeWidget extends StatelessWidget {
                                                                       snapshot
                                                                           .data![
                                                                               index]
-                                                                          .foto)),
+                                                                          .foto),
+                                                                  fit: BoxFit
+                                                                      .fill),
                                                           color: Colors.grey,
                                                           shape:
                                                               BoxShape.circle),
@@ -675,7 +677,8 @@ class HomeWidget extends StatelessWidget {
                                                       : DecorationImage(
                                                           image: NetworkImage(
                                                               adminList[index]
-                                                                  .avatar)),
+                                                                  .avatar),
+                                                          fit: BoxFit.fill),
                                                   color: Colors.grey,
                                                   shape: BoxShape.circle),
                                             ),

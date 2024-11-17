@@ -105,4 +105,42 @@ class DecisionData {
       return chat;
     }
   }
+
+  Future<bool> updateTitleDecision(int idDecision, String title) async {
+    try {
+      var response = await http.put(Uri.parse("${hostData}/decision"),
+          headers: {
+            "Accept": "application/json",
+            "content-type": "application/json",
+          },
+          body: jsonEncode({
+            "id_decision": idDecision,
+            "title": title,
+          }));
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print(response.body);
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  Future<bool> deleteDecision(int idDecision) async {
+    try {
+      var response = await http
+          .delete(Uri.parse("${hostData}/decision?id_decision=${idDecision}"));
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
 }

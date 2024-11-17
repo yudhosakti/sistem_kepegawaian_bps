@@ -444,7 +444,7 @@ class SteganographEncryptProvider extends ChangeNotifier {
             await enkripsiAes(streamEncryptEmail, newOtpNum, algorithm);
         String macBytesEmail = base64Encode(macEncrypt!.bytes);
 
-        print("Ini Aes Encrypt" + transEncryptEmail);
+        print("Ini Aes Encrypt" + aesEmailTest);
 
         if (await hideMessageEmail(aesEmailTest, macBytesEmail)) {
           String name = etEmail.text.split('@')[0];

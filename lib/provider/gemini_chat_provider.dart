@@ -1,14 +1,18 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:simpeg/data/decision_data.dart';
 import 'package:simpeg/models/chat_model.dart';
+import 'package:simpeg/models/decision_model.dart';
 import 'package:simpeg/models/pegawai_detail_model.dart';
 
 class GeminiChatProvider extends ChangeNotifier {
   List<PegawaiDetailModel> allPegawai = [];
 
   List<PegawaiDetailModel> pickedPegawai = [];
+
+  List<DecisionModel> dataDecision = [];
 
   List<ChatModel> listChat = [];
 
@@ -19,6 +23,9 @@ class GeminiChatProvider extends ChangeNotifier {
   TextEditingController etMessage = TextEditingController();
 
   TextEditingController etTitleChat = TextEditingController();
+  TextEditingController etEditChat = TextEditingController();
+
+  bool editLoading = false;
 
   bool isLoading = false;
 
@@ -44,6 +51,15 @@ class GeminiChatProvider extends ChangeNotifier {
     }
   }
 
+  void initialDataDecision(List<DecisionModel> model) {
+    dataDecision = model;
+  }
+
+  Future<void> recreateDecision(int idUser) async {
+    dataDecision = await DecisionData().getAllDecisionByIdUser(idUser);
+    notifyListeners();
+  }
+
   Future<int> createDecision(int idAdmin) async {
     if (validateTitle()) {
       titleLoading = true;
@@ -52,6 +68,7 @@ class GeminiChatProvider extends ChangeNotifier {
       if (idData != 0) {
         titleLoading = false;
         notifyListeners();
+        
         return idData;
       } else {
         return 0;
@@ -144,5 +161,32 @@ class GeminiChatProvider extends ChangeNotifier {
 
   void initialChat(List<ChatModel> newChat) {
     listChat = newChat;
+  }
+
+  Future<bool> updateDecisionTitle(int idDecision, int idUser) async {
+    if (etEditChat.text.isEmpty) {
+      return false;
+    } else {
+      if (await DecisionData()
+          .updateTitleDecision(idDecision, etEditChat.text)) {
+        await recreateDecision(idUser);
+        return true;
+      } else {
+        notifyListeners();
+        return false;
+      }
+    }
+  }
+
+  
+  Future<bool> deleteDecision(int idDecision, int idUser) async {
+     if (await DecisionData()
+          .deleteDecision(idDecision)) {
+        await recreateDecision(idUser);
+        return true;
+      } else {
+        notifyListeners();
+        return false;
+      }
   }
 }

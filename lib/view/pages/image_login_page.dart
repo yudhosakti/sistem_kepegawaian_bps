@@ -175,16 +175,24 @@ class _ImageLoginPageState extends State<ImageLoginPage> {
                                     msg: "User Tidak Terdaftar");
                               } else {
                                 authprov.updateUserInformation(admin);
-                                preferences.setString(
-                              'token', authprov.adminModel!.token);
-                              preferences.setString(
-                              'id', admin.idAdmin.toString());
-                                Navigator.pushReplacement(context,
+                                if (await preferences.setString(
+                              'token', authprov.adminModel!.token)) {
+                                  if ( await preferences.setString(
+                              'id', admin.idAdmin.toString())) {
+                                      Navigator.pushReplacement(context,
                                     MaterialPageRoute(
                                   builder: (context) {
                                     return MainPage();
                                   },
                                 ));
+                                  } else {
+                                    Fluttertoast.showToast(
+                                    msg: "User Tidak Terdaftar");
+                                  }
+                                }else{
+                                  Fluttertoast.showToast(msg: "Failed");
+                                }
+                              
                               }
                             } else {
                               Fluttertoast.showToast(msg: "Failed");

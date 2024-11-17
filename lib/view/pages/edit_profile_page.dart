@@ -57,7 +57,8 @@ class EditProfilePage extends StatelessWidget {
                                     image: NetworkImage(context
                                         .read<AuthProvider>()
                                         .adminModel!
-                                        .avatar))
+                                        .avatar),
+                                    fit: BoxFit.fill)
                                 : DecorationImage(
                                     image: AssetImage(
                                         'assets/default_profile.jpg')))

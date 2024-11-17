@@ -198,7 +198,6 @@ class SteganographDecryptProvider extends ChangeNotifier {
 
       print("Key Generate Decrypt : " + keyGenerated.toString());
       print("Plain Text : " + plainText.toString());
-      notifyListeners();
       return hasilNew;
     } else {
       return hasilNew;

@@ -26,10 +26,14 @@ class DetailUserPage extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.grey,
-                    image: DecorationImage(
-                      opacity: 0.6,
-                      image: AssetImage('assets/default_profile.jpg'),
-                    ),
+                    image: adminModel.avatar == ''
+                        ? DecorationImage(
+                            opacity: 0.6,
+                            image: AssetImage('assets/default_profile.jpg'),
+                          )
+                        : DecorationImage(
+                            image: NetworkImage(adminModel.avatar),
+                            fit: BoxFit.fill),
                   ),
                 )
               ],
