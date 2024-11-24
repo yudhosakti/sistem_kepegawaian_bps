@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:simpeg/models/admin_model.dart';
+import 'package:simpeg/provider/auth_provider.dart';
+import 'package:simpeg/provider/detail_user_provider.dart';
+import 'package:simpeg/view/widget/information_user_widget.dart';
 
 class DetailUserPage extends StatelessWidget {
   final AdminModel adminModel;
@@ -12,53 +16,101 @@ class DetailUserPage extends StatelessWidget {
       appBar: AppBar(
         title: Text("Detail User"),
       ),
-      body: ListView(
-        children: [
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.15,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: Builder(
+        builder: (context) {
+          context.read<DetailUserProvider>().setAdminModel(adminModel);
+          return Consumer<DetailUserProvider>(builder: (context, provider, child) {
+            return ListView(
               children: [
                 Container(
-                  width: MediaQuery.of(context).size.width * 0.22,
-                  height: MediaQuery.of(context).size.height,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.grey,
-                    image: adminModel.avatar == ''
-                        ? DecorationImage(
-                            opacity: 0.6,
-                            image: AssetImage('assets/default_profile.jpg'),
-                          )
-                        : DecorationImage(
-                            image: NetworkImage(adminModel.avatar),
-                            fit: BoxFit.fill),
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.15,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.22,
+                        height: MediaQuery.of(context).size.height,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey,
+                          image: adminModel.avatar == ''
+                              ? DecorationImage(
+                                  opacity: 0.6,
+                                  image: AssetImage('assets/default_profile.jpg'),
+                                )
+                              : DecorationImage(
+                                  image: NetworkImage(adminModel.avatar),
+                                  fit: BoxFit.fill),
+                        ),
+                      )
+                    ],
                   ),
-                )
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.01,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width * 0.01,
+                      right: MediaQuery.of(context).size.width * 0.28),
+                  child: InformationUserWidget(
+                    dataAdmin: provider.adminModel!,
+                    code: 1,
+                    isEditable:
+                        context.read<AuthProvider>().adminModel!.role == 'Admin'
+                            ? true
+                            : false,
+                    data: provider.adminModel!.username,
+                    title: "Username",
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width * 0.01,
+                      right: MediaQuery.of(context).size.width * 0.28),
+                  child: InformationUserWidget(
+                    dataAdmin: provider.adminModel!,
+                    code: 2,
+                    isEditable:
+                        context.read<AuthProvider>().adminModel!.role == 'Admin'
+                            ? true
+                            : false,
+                    data: provider.adminModel!.email,
+                    title: "Email",
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width * 0.01,
+                      right: MediaQuery.of(context).size.width * 0.28),
+                  child: InformationUserWidget(
+                    dataAdmin: provider.adminModel!,
+                    code: 3,
+                    isEditable:
+                        context.read<AuthProvider>().adminModel!.role == 'Admin'
+                            ? true
+                            : false,
+                    data: provider.adminModel!.role,
+                    title: "Role",
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width * 0.01,
+                      right: MediaQuery.of(context).size.width * 0.28),
+                  child: InformationUserWidget(
+                    dataAdmin: provider.adminModel!,
+                    code: 4,
+                    isEditable: false,
+                    data: provider.adminModel!.lastLogin,
+                    title: "Last login",
+                  ),
+                ),
               ],
-            ),
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.01,
-          ),
-          UserDetailComponentWidget(
-            title: "Username",
-            value: adminModel.username,
-          ),
-          UserDetailComponentWidget(
-            title: "Email",
-            value: adminModel.email,
-          ),
-          UserDetailComponentWidget(
-            title: "Role",
-            value: adminModel.role,
-          ),
-          UserDetailComponentWidget(
-            title: "Last Login",
-            value: adminModel.lastLogin,
-          ),
-        ],
+            );
+          });
+        }
       ),
     );
   }

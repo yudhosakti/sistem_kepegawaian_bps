@@ -28,12 +28,13 @@ class AdminData {
           return data;
         }
       } else {
-         var response = await http.post(Uri.parse("${hostData}/user/login/image"),
-            headers: {
-              "Accept": "application/json",
-              "content-type": "application/json",
-            },
-            body: jsonEncode({"email": email}));
+        var response =
+            await http.post(Uri.parse("${hostData}/user/login/image"),
+                headers: {
+                  "Accept": "application/json",
+                  "content-type": "application/json",
+                },
+                body: jsonEncode({"email": email}));
         if (response.statusCode == 200) {
           var jsonData = jsonDecode(response.body);
           dynamic jsonMap = (jsonData as Map<String, dynamic>)['data'];
@@ -50,7 +51,7 @@ class AdminData {
     }
   }
 
-   Future<bool> sendEmail(
+  Future<bool> sendEmail(
       String name, String email, String subject, String message) async {
     String serviceId = "service_no5c5gl";
     String templateId = "template_j3jjaia";
@@ -205,6 +206,36 @@ class AdminData {
     } catch (e) {
       print(e);
       return false;
+    }
+  }
+
+  Future<AdminModel?> updateUser(
+      int idUSer, String username, String email, String role) async {
+    AdminModel? adminData;
+
+    try {
+      var response = await http.put(Uri.parse("${hostData}/user/update"),
+          headers: {
+            "Accept": "application/json",
+            "content-type": "application/json",
+          },
+          body: jsonEncode({
+            "id_user": idUSer,
+            "username": username,
+            "email": email,
+            "role": role
+          }));
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        dynamic dataUser = (jsonData as Map<String, dynamic>)['data'];
+        adminData = AdminModel.getDataFromJSON(dataUser);
+        return adminData;
+      } else {
+        return adminData;
+      }
+    } catch (e) {
+      print(e);
+      return adminData;
     }
   }
 

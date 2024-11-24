@@ -9,6 +9,7 @@ import 'package:simpeg/provider/add_user_provider.dart';
 import 'package:simpeg/provider/auth_provider.dart';
 import 'package:simpeg/provider/bottom_nav_provider.dart';
 import 'package:simpeg/provider/detail_pegawai_provider.dart';
+import 'package:simpeg/provider/detail_user_provider.dart';
 import 'package:simpeg/provider/edit_user_provider.dart';
 import 'package:simpeg/provider/employee_filter_provider.dart';
 import 'package:simpeg/provider/gemini_chat_provider.dart';
@@ -78,7 +79,8 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => SqfliteProvider(),
-        )
+        ),
+        ChangeNotifierProvider(create: (context) => DetailUserProvider(),)
       ],
       child: MyApp(
         isConnect: isConnect,
