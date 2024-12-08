@@ -13,6 +13,7 @@ import 'package:simpeg/provider/detail_user_provider.dart';
 import 'package:simpeg/provider/edit_user_provider.dart';
 import 'package:simpeg/provider/employee_filter_provider.dart';
 import 'package:simpeg/provider/gemini_chat_provider.dart';
+import 'package:simpeg/provider/log_provider.dart';
 import 'package:simpeg/provider/search_pegawai_provider.dart';
 import 'package:simpeg/provider/sqflite_provider.dart';
 import 'package:simpeg/provider/steganograph_decrypt_provider.dart';
@@ -80,7 +81,10 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => SqfliteProvider(),
         ),
-        ChangeNotifierProvider(create: (context) => DetailUserProvider(),)
+        ChangeNotifierProvider(
+          create: (context) => DetailUserProvider(),
+        ),
+        ChangeNotifierProvider(create: (context) => LogProvider(),)
       ],
       child: MyApp(
         isConnect: isConnect,
@@ -114,51 +118,51 @@ class MyApp extends StatelessWidget {
                 );
               } else {
                 return Consumer<AuthProvider>(
-                  builder: (context, provider, child) {
-                print(isConnect);
-                if (!isConnect && id != null && id!.isNotEmpty) {
-                  AdminModel adminModel = AdminModel(
-                      idAdmin: int.parse(id!),
-                      avatar: '',
-                      email: '',
-                      lastLogin: '',
-                      password: '',
-                      role: 'User',
-                      username: 'Guest');
-                  context
-                      .read<AuthProvider>()
-                      .updateUserInformation(adminModel);
-                  return MainPage();
-                } else if (token == null ||
-                    token == '' ||
-                    JwtDecoder.isExpired(token!)) {
-                  return OnBoardingPage();
-                } else {
-                  int idAdmin = JwtDecoder.decode(token!)['id_user'];
-                  print(idAdmin);
-                  print(token);
-                  return FutureBuilder(
-                    future: provider.getSingleUser(idAdmin),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Scaffold(
-                          body: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      } else {
-                        if (provider.adminModel == null) {
-                          return OnBoardingPage();
+                    builder: (context, provider, child) {
+                  print(isConnect);
+                  if (!isConnect && id != null && id!.isNotEmpty) {
+                    AdminModel adminModel = AdminModel(
+                        idAdmin: int.parse(id!),
+                        avatar: '',
+                        email: '',
+                        lastLogin: '',
+                        password: '',
+                        role: 'User',
+                        username: 'Guest');
+                    context
+                        .read<AuthProvider>()
+                        .updateUserInformation(adminModel);
+                    return MainPage();
+                  } else if (token == null ||
+                      token == '' ||
+                      JwtDecoder.isExpired(token!)) {
+                    return OnBoardingPage();
+                  } else {
+                    int idAdmin = JwtDecoder.decode(token!)['id_user'];
+                    print(idAdmin);
+                    print(token);
+                    return FutureBuilder(
+                      future: provider.getSingleUser(idAdmin),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Scaffold(
+                            body: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
                         } else {
-                          return MainPage();
+                          if (provider.adminModel == null) {
+                            return OnBoardingPage();
+                          } else {
+                            return MainPage();
+                          }
                         }
-                      }
-                    },
-                  );
-                }
-              });
+                      },
+                    );
+                  }
+                });
               }
-              
             }));
   }
 }

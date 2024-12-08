@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:simpeg/data/host_data.dart';
 import 'package:simpeg/models/admin_model.dart';
+import 'package:simpeg/models/log_model.dart';
 
 class AdminData {
   Future<AdminModel?> loginUser(String email, String password, int code) async {
@@ -308,6 +309,29 @@ class AdminData {
     } catch (e) {
       print(e);
       return model;
+    }
+  }
+
+  Future<List<LogModel>> getLogData(int idUser) async {
+    List<LogModel> logDatas = [];
+
+    try {
+      var response =
+          await http.get(Uri.parse("${hostData}/user/log?id_user=${idUser}"));
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        List<dynamic> jsonMap = (jsonData as Map<String, dynamic>)['data'];
+        for (var element in jsonMap) {
+          logDatas.add(LogModel.getDataFromJSON(element));
+        }
+        return logDatas;
+      } else {
+        print(response.body);
+        return logDatas;
+      }
+    } catch (e) {
+      print(e);
+      return logDatas;
     }
   }
 }

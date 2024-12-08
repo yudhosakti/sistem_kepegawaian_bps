@@ -21,17 +21,18 @@ class ImageLoginPage extends StatefulWidget {
 }
 
 class _ImageLoginPageState extends State<ImageLoginPage> {
-   late SharedPreferences preferences;
+  late SharedPreferences preferences;
 
-   @override
-   void initState() {
+  @override
+  void initState() {
     initialSharePref();
-     super.initState();
-     
-   }
+    super.initState();
+  }
+
   Future<void> initialSharePref() async {
     preferences = await SharedPreferences.getInstance();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,7 +129,7 @@ class _ImageLoginPageState extends State<ImageLoginPage> {
                         child: Container(
                       child: TextFormField(
                         controller: provider.etKeyDecypt,
-                        maxLength: 4,
+                        maxLength: 6,
                         decoration: InputDecoration(
                             hintText: "Masukkan kunci",
                             fillColor: Colors.grey.shade300,
@@ -176,23 +177,22 @@ class _ImageLoginPageState extends State<ImageLoginPage> {
                               } else {
                                 authprov.updateUserInformation(admin);
                                 if (await preferences.setString(
-                              'token', authprov.adminModel!.token)) {
-                                  if ( await preferences.setString(
-                              'id', admin.idAdmin.toString())) {
-                                      Navigator.pushReplacement(context,
-                                    MaterialPageRoute(
-                                  builder: (context) {
-                                    return MainPage();
-                                  },
-                                ));
+                                    'token', authprov.adminModel!.token)) {
+                                  if (await preferences.setString(
+                                      'id', admin.idAdmin.toString())) {
+                                    Navigator.pushReplacement(context,
+                                        MaterialPageRoute(
+                                      builder: (context) {
+                                        return MainPage();
+                                      },
+                                    ));
                                   } else {
                                     Fluttertoast.showToast(
-                                    msg: "User Tidak Terdaftar");
+                                        msg: "User Tidak Terdaftar");
                                   }
-                                }else{
+                                } else {
                                   Fluttertoast.showToast(msg: "Failed");
                                 }
-                              
                               }
                             } else {
                               Fluttertoast.showToast(msg: "Failed");

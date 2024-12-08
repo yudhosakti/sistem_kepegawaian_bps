@@ -42,20 +42,17 @@ class SqfliteProvider extends ChangeNotifier {
 
   Future<bool> initilizeDatabaseWithoutSysn() async {
     isLoading = true;
-    notifyListeners();
     // Get a location using getDatabasesPath
     db = await openDatabase('pegawai.db');
     if (db == null) {
       print("Database Belum diinisiais");
       isLoading = false;
-      notifyListeners();
       return false;
     } else {
       print("database path : ${db!.database}");
       
       await createTable();
       isLoading = false;
-      notifyListeners();
       return true;
     }
   }
